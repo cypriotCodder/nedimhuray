@@ -18,7 +18,7 @@ export const site: Site = {
     intro: "Placeholder introduction: one or two sentences about who you are and the kind of work you want to be known for.",
     bio: "This is sample bio copy. Replace it with a short, plain-spoken account of your background — where you started, what you work on now, and how you like to work.\n\nA second paragraph can cover what you are looking for next. Two or three paragraphs is plenty; the projects carry the rest.",
     portrait: {
-      src: "/about/portrait.svg",
+      src: "/about/portrait.jpeg",
       alt: "Placeholder portrait: a halftone head-and-shoulders silhouette standing in for a photo.",
       width: 1200,
       height: 1500,
