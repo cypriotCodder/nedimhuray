@@ -7,12 +7,12 @@ import type { Site } from "./types";
 export const site: Site = {
   name: "Nedim",
   positioning: "Selected projects, presented one at a time. This line is a placeholder for a one-sentence positioning statement.",
-  location: "City, Country (placeholder)",
-  availability: "Availability line (placeholder)",
-  email: "hello@example.com",
+  location: "Kyrenia-Nicosia, Cyprus",
+  availability: "Currently seeking full-time opportunities",
+  email: "huraynedim@icloud.com",
   socials: [
-    { label: "GitHub", href: "https://github.com/" },
-    { label: "LinkedIn", href: "https://www.linkedin.com/" },
+    { label: "GitHub", href: "https://github.com/cypriotCodder" },
+    { label: "LinkedIn", href: "www.linkedin.com/in/nedim-huray" },
   ],
   about: {
     intro: "Placeholder introduction: one or two sentences about who you are and the kind of work you want to be known for.",

@@ -84,6 +84,7 @@ type Project = {
 7. **SEO/perf/a11y pass** — metadata, per-project OG images, sitemap, Lighthouse ≥ 95 on all four categories, axe-clean, no layout shift.
    *Status:* metadata + canonical URLs, `next/og` cards (site card = the Index; project card = cover + title; `lib/og.tsx`), `sitemap.xml`, `robots.txt`, site icon. The site origin comes from `NEXT_PUBLIC_SITE_URL`, else Vercel's production URL (`lib/site-url.ts`). The cursor preview (and Motion with it) is code-split and only loaded on fine-pointer screens, so first-load JS on `/` is 144 kB gz. Measured on a local production build: Lighthouse mobile 96–98 / 100 / 100 / 100, desktop 100 across the board, CLS 0, axe: 0 violations in both themes. **Open:** simulated-mobile LCP is 2.3–2.7 s, not < 2 s. It tracks the framework JS (≈125 kB of the 144 kB is React/Next), not the images (a raster cover tested no better). Re-measure with real assets on the deployed site before chasing it.
 8. **Deploy** — Vercel, custom domain notes in README.
+   *Status (2026-10-15):* deployed to Vercel project `portfolio-website`. Live at **https://nedimhuray.com** (Cloudflare DNS, CNAME records, DNS only; `www` and `http` → 308 → `https://nedimhuray.com`). `NEXT_PUBLIC_SITE_URL=https://nedimhuray.com` is set for Production. README not written yet. Remaining work is tracked in [TODO.md](TODO.md).
 
 Each phase should end in a working, committed state.
 
