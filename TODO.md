@@ -12,20 +12,34 @@ issued by Vercel (auto-renews). `www` and `http://` both 308-redirect to `https:
 
 Keep the Cloudflare records **DNS only**: turning on the orange-cloud proxy would interfere with Vercel's certificates and caching.
 
-## 2. Replace placeholder content (it is live on nedimhuray.com now)
+## 2. Get the live site up to date (do first)
 
-Everything in `content/` is placeholder, including the **contact email (`hello@example.com`)** and
-the social links (they point to github.com / linkedin.com home pages). PLAN.md §9 lists what's needed:
+The live site still runs the **07:11 CLI deploy** and shows placeholders (`hello@example.com`,
+"City, Country (placeholder)"). Your commit `9984d79` (personal info) was pushed *before* Vercel was
+connected to GitHub (07:42), so it never deployed. Auto-deploy works only for pushes from now on.
 
-- [ ] `content/site.ts`: name, one-line positioning, location, availability, email, social links
-- [ ] `content/site.ts` → `about`: intro, bio, skills, portrait (`public/about/`), CV PDF (set `about.cv` once the file exists)
+- [ ] Fix the LinkedIn link in `content/site.ts`: `www.linkedin.com/in/nedim-huray` → `https://www.linkedin.com/in/nedim-huray`
+      (without `https://` it resolves to `nedimhuray.com/www.linkedin.com/...` and 404s)
+- [ ] Finish the portrait swap that's uncommitted in the working tree (`portrait.svg` deleted, `portrait.jpeg` and
+      `portrait2.svg` added): pick one, update `site.about.portrait` (`src`, real `width`/`height`, real alt text)
+      in `content/site.ts`, and delete the unused file. Committing the deletion alone leaves a broken image on `/about`
+- [ ] Commit and push to `main` → confirm in Vercel that a **Git** deployment builds and goes to production
+- [ ] Check https://nedimhuray.com shows the real email, location and links
+
+## 3. Replace remaining placeholder content
+
+Done in `9984d79` (not live yet; see §2): location, availability, email, GitHub + LinkedIn links.
+
+- [ ] `content/site.ts`: one-line `positioning` (still placeholder)
+- [ ] `content/site.ts` → `about`: `intro`, `bio`, `skills` (all placeholder), CV PDF (set `about.cv` once the file exists in `public/`)
 - [ ] `content/projects.ts`: 3–6 real projects (title, tagline, year, role, tags, stack, links, blocks) with media in `public/projects/<slug>/`
   - Covers: use JPG or PNG (WebP/AVIF covers get a text-only share card, because `next/og` can't decode them), 16:10, with real alt text
   - Give every image `width`/`height` (the `Media` type requires them; this prevents layout shift)
 - [ ] Delete the generated placeholder art and `scripts/generate-placeholders.mjs` + the `placeholders` npm script once nothing uses them
+      (note: the script also writes `public/about/portrait.svg`; remove that part too)
 - [ ] Accent colour or brand preferences, if any (tokens live in `app/globals.css`; keep AA contrast in both themes)
 
-## 3. Still open from phase 7: mobile LCP
+## 4. Still open from phase 7: mobile LCP
 
 Target in PLAN.md: LCP < 2 s on a throttled mobile profile.
 Measured on the production deployment before the domain went live (Lighthouse mobile, simulated throttling, 2 runs each):
@@ -50,15 +64,16 @@ Things to try, in order:
 - [ ] Get real-user numbers: Vercel Speed Insights (`@vercel/speed-insights`); this is a new dependency, so decide first
 - [ ] Home hit 94 in one of two runs; keep an eye on the ≥ 95 target
 
-## 4. Repository & deploy pipeline
+## 5. Repository & deploy pipeline
 
-- [ ] `git init` and make a first commit (PLAN.md wants each phase committed; nothing is committed yet)
-- [ ] Push to GitHub and connect the repo to the Vercel project for automatic preview + production deploys
-      (right now, deploys only happen manually via `vercel deploy --prod`)
+Done: this folder is a checkout of `github.com/cypriotCodder/nedimhuray` (private, `main` tracks `origin/main`),
+and the Vercel project is connected to it (production branch `main`; other branches get preview deploys).
+
+- [ ] Confirm auto-deploy with the first push (see §2)
 - [ ] Write `README.md` (still blank): how to run, how to add a project, how to deploy, domain/DNS notes
 - [ ] Optional: update Vercel CLI (`npm i -g vercel@latest`; installed 62.2.0, latest 64.2.0)
 
-## 5. Testing gaps
+## 6. Testing gaps
 
 Everything so far was verified in Chromium only (headless, 390 / 1024 / 1440 px, both themes, reduced motion).
 
@@ -67,7 +82,7 @@ Everything so far was verified in Chromium only (headless, 390 / 1024 / 1440 px,
 - [ ] A real phone: tap cards, the morph into the hero, scrolling performance
 - [ ] Screen reader pass (VoiceOver): Index rows, theme toggle (`aria-pressed`), skip link
 
-## 6. Small polish (nice to have)
+## 7. Small polish (nice to have)
 
 - [ ] When the cursor preview opens from keyboard focus it parks over the row's role/tags column; place it after the title instead
 - [ ] Going back from a case study to the Index on desktop has no animation (instant); consider a reverse morph
