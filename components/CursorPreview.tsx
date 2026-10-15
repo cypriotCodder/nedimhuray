@@ -17,8 +17,11 @@ import type { IndexItem } from "./ProjectIndex";
 
 /** Imperative handle, so pointer moves never re-render the Index. */
 export type PreviewHandle = {
-  /** Place the preview beside a viewport point (flips left near the right edge). */
-  moveTo: (px: number, py: number) => void;
+  /**
+   * Place the preview beside a viewport point (flips left near the right edge).
+   * Vertically centred on `py`, or with `above`, sitting just above it.
+   */
+  moveTo: (px: number, py: number, options?: { above?: boolean }) => void;
 };
 
 type Props = {
@@ -53,14 +56,15 @@ export function CursorPreview({ items, activeSlug, ref }: Props) {
   const tilt = useTransform(velocity, [-2400, 0, 2400], [-5, 0, 5], { clamp: true });
 
   useImperativeHandle(ref, () => ({
-    moveTo(px, py) {
+    moveTo(px, py, options) {
       const el = box.current;
       if (!el) return;
       const w = el.offsetWidth;
       const h = el.offsetHeight;
       const right = px + OFFSET;
       x.set(right + w + EDGE > window.innerWidth ? px - OFFSET - w : right);
-      y.set(Math.min(Math.max(py - h / 2, EDGE), window.innerHeight - h - EDGE));
+      const top = options?.above ? py - h - EDGE : py - h / 2;
+      y.set(Math.min(Math.max(top, EDGE), window.innerHeight - h - EDGE));
     },
   }));
 

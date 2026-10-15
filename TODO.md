@@ -1,6 +1,7 @@
 # TODO
 
 Outstanding work after phases 1–8 (see PLAN.md). Ordered roughly by priority.
+**Status:** §4, §6, §7 worked through on 2026-10-15. Changes are local and uncommitted until pushed to `main`.
 Last updated: 2026-10-15.
 
 ## 1. Domain ✅ (done 2026-10-15)
@@ -12,23 +13,21 @@ issued by Vercel (auto-renews). `www` and `http://` both 308-redirect to `https:
 
 Keep the Cloudflare records **DNS only**: turning on the orange-cloud proxy would interfere with Vercel's certificates and caching.
 
-## 2. Get the live site up to date (do first)
+## 2. Live site up to date ✅ (done 2026-10-15)
 
-The live site still runs the **07:11 CLI deploy** and shows placeholders (`hello@example.com`,
-"City, Country (placeholder)"). Your commit `9984d79` (personal info) was pushed *before* Vercel was
-connected to GitHub (07:42), so it never deployed. Auto-deploy works only for pushes from now on.
+GitHub → Vercel auto-deploy works: commits `591751f` and `03d6a7c` built and went to production as **Git**
+deployments. nedimhuray.com shows the real email, location, links and the new portrait.
 
-- [ ] Fix the LinkedIn link in `content/site.ts`: `www.linkedin.com/in/nedim-huray` → `https://www.linkedin.com/in/nedim-huray`
-      (without `https://` it resolves to `nedimhuray.com/www.linkedin.com/...` and 404s)
-- [ ] Finish the portrait swap that's uncommitted in the working tree (`portrait.svg` deleted, `portrait.jpeg` and
-      `portrait2.svg` added): pick one, update `site.about.portrait` (`src`, real `width`/`height`, real alt text)
-      in `content/site.ts`, and delete the unused file. Committing the deletion alone leaves a broken image on `/about`
-- [ ] Commit and push to `main` → confirm in Vercel that a **Git** deployment builds and goes to production
-- [ ] Check https://nedimhuray.com shows the real email, location and links
+Loose ends from that step:
+- [ ] LinkedIn link still lacks `https://` (`www.linkedin.com/in/nedim-huray` → `https://www.linkedin.com/in/nedim-huray`); as is it 404s on our own domain
+- [ ] Portrait alt text in `content/site.ts` still describes the old placeholder silhouette
+- [ ] Portrait `width`/`height` say 1200×1500 but `portrait.jpeg` is 768×1024 (3:4; shown cropped to 4:5). Correct the numbers,
+      and ideally supply a ≥ 1200 px-wide photo (on desktop it's displayed ~580 px wide, i.e. ~1160 px on retina)
+- [ ] `public/about/portrait2.svg` is unused; delete it
 
 ## 3. Replace remaining placeholder content
 
-Done in `9984d79` (not live yet; see §2): location, availability, email, GitHub + LinkedIn links.
+Done and live: location, availability, email, GitHub + LinkedIn links (LinkedIn URL needs a fix, see §2), portrait.
 
 - [ ] `content/site.ts`: one-line `positioning` (still placeholder)
 - [ ] `content/site.ts` → `about`: `intro`, `bio`, `skills` (all placeholder), CV PDF (set `about.cv` once the file exists in `public/`)
@@ -39,53 +38,68 @@ Done in `9984d79` (not live yet; see §2): location, availability, email, GitHub
       (note: the script also writes `public/about/portrait.svg`; remove that part too)
 - [ ] Accent colour or brand preferences, if any (tokens live in `app/globals.css`; keep AA contrast in both themes)
 
-## 4. Still open from phase 7: mobile LCP
+## 4. Mobile LCP (phase 7 follow-up)
 
 Target in PLAN.md: LCP < 2 s on a throttled mobile profile.
-Measured on the production deployment before the domain went live (Lighthouse mobile, simulated throttling, 2 runs each):
 
-| Route                | Perf   | LCP        | CLS |
-|----------------------|--------|------------|-----|
-| `/`                  | 94–96  | 2.5–2.7 s  | 0   |
-| `/work/quiet-machine`| 95     | 2.4–2.5 s  | 0   |
-| `/about`             | 96–100 | 1.4–2.3 s  | 0   |
+**Re-measured 2026-10-15 on https://nedimhuray.com, 3 runs each.** Lighthouse's default *simulated* throttling turned
+out to be noisy (same page 1.6–2.4 s), which inflated the earlier numbers. *Applied* throttling
+(`--throttling-method=devtools`) is stable and is what we track now:
 
-Accessibility, Best Practices and SEO score 100 on every route. Desktop scores 100 / LCP ≈ 0.5–0.7 s.
+| Route                 | Perf  | LCP (applied) | LCP (simulated) |
+|-----------------------|-------|---------------|-----------------|
+| `/`                   | 99    | 1.8–1.9 s ✅  | 1.6–2.3 s       |
+| `/work/quiet-machine` | 98–99 | 1.7–1.8 s ✅  | 2.4 s           |
+| `/about`              | 94–95 | 2.8–2.9 s ❌  | 2.3–2.9 s       |
 
-What we know: FCP is ~0.8–1.0 s, the LCP image itself arrives immediately, and nearly all of the LCP time
-is "render delay", which Lighthouse ties to the JS that runs before the paint. First-load JS on `/` is 144 kB gz,
-about 125 kB of which is the React/Next runtime. Swapping the SVG cover for a JPEG did not help.
+Render delay is now 16–110 ms on every page. The old "JS blocks the paint" theory no longer applies, so shrinking the
+`ProjectIndex` client boundary is **dropped**: it would not move LCP.
 
-Things to try, in order:
-- [ ] Re-measure after real images replace the placeholders (raster covers through `next/image` get resized per device)
-- [ ] Shrink the client boundary on `/`: `ProjectIndex` makes the whole list a client component; render rows on the
-      server and keep only the hover/preview logic on the client
-- [ ] Profile one throttled run in Chrome DevTools (Performance panel, 4× CPU) to see what's between image load and paint
-- [ ] Get real-user numbers: Vercel Speed Insights (`@vercel/speed-insights`); this is a new dependency, so decide first
-- [ ] Home hit 94 in one of two runs; keep an eye on the ≥ 95 target
+`/about` regressed when the real portrait replaced the SVG: the LCP image was a 130 kB WebP that took 1.9 s to download.
+- [x] Serve AVIF first (`images.formats` in `next.config.ts`): portrait 132 kB → 60 kB. Applies to all future raster covers too
+- [x] `fetchPriority="high"` on the portrait (it's the LCP element on mobile)
+- [ ] Deploy, then re-measure `/about` on production (locally it's now 2.1 s with ~0 TTFB; production adds ~0.4 s TTFB)
+- [ ] If still > 2 s: the rest is bandwidth contention on slow 4G (fonts ≈ 98 kB + JS 144 kB load alongside the image).
+      Options: a smaller/cropped portrait, or `preload` instead of `fetchPriority` so it starts from `<head>`
+- [ ] Re-measure every page once real project covers replace the placeholders
+- [ ] Optional real-user data: Vercel Speed Insights (`@vercel/speed-insights`); new dependency, decide first
+
+Tried and rejected: dropping Bricolage's `opsz` axis would save 35 kB on every page (77 → 41 kB), but it visibly
+degrades the display type (titles become wider and plainer; "Atlas of Nowhere" grows ~10%, the intro gains a line).
+Kept the axis.
 
 ## 5. Repository & deploy pipeline
 
 Done: this folder is a checkout of `github.com/cypriotCodder/nedimhuray` (private, `main` tracks `origin/main`),
 and the Vercel project is connected to it (production branch `main`; other branches get preview deploys).
 
-- [ ] Confirm auto-deploy with the first push (see §2)
+- [x] Auto-deploy confirmed (Git deployments of `591751f`, `03d6a7c`)
 - [ ] Write `README.md` (still blank): how to run, how to add a project, how to deploy, domain/DNS notes
 - [ ] Optional: update Vercel CLI (`npm i -g vercel@latest`; installed 62.2.0, latest 64.2.0)
 
 ## 6. Testing gaps
 
-Everything so far was verified in Chromium only (headless, 390 / 1024 / 1440 px, both themes, reduced motion).
+Automated runs on a local production build (2026-10-15):
 
-- [ ] Safari (macOS + iOS): view-transition morph, theme toggle, cursor preview
-- [ ] Firefox: the same (browsers without view-transition support should just navigate instantly)
-- [ ] A real phone: tap cards, the morph into the hero, scrolling performance
-- [ ] Screen reader pass (VoiceOver): Index rows, theme toggle (`aria-pressed`), skip link
+- [x] **Chromium:** morph (hover, keyboard, mobile tap, next project), reduced motion, theme, keyboard nav, axe (0 violations, both themes)
+- [x] **WebKit 26.6** (Safari's engine, via Playwright): every morph path pairs and animates with the same geometry as Chromium
+      (sampled per frame: 374 → 1440 px over ~560 ms); reduced motion = in-place crossfade; theme toggle + `theme-color` sync;
+      `aria-current`; keyboard preview placement. Note: in Safari, Tab skips links unless the visitor uses Option+Tab
+      or enables "Press Tab to highlight each item" (normal Safari behaviour, nothing to fix)
+- [ ] **Firefox:** blocked. Playwright's Firefox 155 Nightly won't start on this macOS ("Could not find profile folder"),
+      and Firefox isn't installed. Install Firefox and check by hand, or retry with a newer Playwright
+- [ ] **Real Safari** (macOS + iOS): a quick manual look at the morph. WebKit-in-Playwright isn't identical to Safari,
+      and its screenshots of in-flight transitions are unreliable, so the motion itself was verified by numbers, not by eye
+- [ ] **A real phone:** tap cards, the morph into the hero, scrolling
+- [ ] **VoiceOver pass** (needs a person). Done as a proxy: the accessibility tree is sound (landmarks, nav list, headings,
+      labelled Index region, `aria-pressed` toggle, `aria-current`). Fixed: Index rows announced "01 2026 Atlas of Nowhere
+      Design & Development…"; now the link name is just the title, with tagline/role/year/tags as its description
 
-## 7. Small polish (nice to have)
+## 7. Small polish
 
-- [ ] When the cursor preview opens from keyboard focus it parks over the row's role/tags column; place it after the title instead
-- [ ] Going back from a case study to the Index on desktop has no animation (instant); consider a reverse morph
-- [ ] `theme-color` meta follows the system theme, not the manual toggle
-- [ ] Mark the current page in the header nav (`aria-current="page"`)
+- [x] Keyboard-opened cursor preview no longer covers the focused row: it sits after the title's arrow, above the row
+- [x] `theme-color` meta follows the manual toggle (and stays correct across client navigation; `lib/theme.ts` holds the colours)
+- [x] Current page marked in the header nav (`aria-current="page"`, shown in full-strength text) via `components/NavLink.tsx`
+- [ ] Going back from a case study to the Index on desktop has no animation (instant). A reverse morph needs a design:
+      on desktop the cover only exists in the hidden cursor preview, so there's nothing on the Index to land on
 - [ ] Vercel Authentication protects preview deployments (production is public); fine as is, but note it when sharing previews

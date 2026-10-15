@@ -4,6 +4,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { site } from "@/content/site";
 import { siteUrl } from "@/lib/site-url";
+import { themeColors } from "@/lib/theme";
 import "./globals.css";
 
 // Display + body: one variable grotesque with an optical-size axis, so the
@@ -30,10 +31,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  // Browser UI colour; must be literals. Keep in sync with --color-canvas in globals.css.
+  // Follows the system theme; ThemeToggle overrides both tags after a manual choice.
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f3f0e9" },
-    { media: "(prefers-color-scheme: dark)", color: "#0e0d0b" },
+    { media: "(prefers-color-scheme: light)", color: themeColors.light },
+    { media: "(prefers-color-scheme: dark)", color: themeColors.dark },
   ],
   colorScheme: "dark light",
 };

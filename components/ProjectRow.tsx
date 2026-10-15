@@ -35,10 +35,15 @@ export function ProjectRow({ item, number, eagerCover, shareCover, onPointerEnte
     </div>
   );
 
+  // Screen readers announce the title as the link name, the rest as its description.
+  const id = (part: string) => `row-${item.slug}-${part}`;
+
   return (
     <li>
       <Link
         href={`/work/${item.slug}`}
+        aria-labelledby={id("title")}
+        aria-describedby={["tagline", "role", "year", "tags"].map(id).join(" ")}
         onPointerEnter={onPointerEnter}
         onFocus={onFocus}
         className="index-row group grid grid-cols-12 gap-x-4 gap-y-3 border-b border-line py-6 transition-opacity duration-(--duration-base) ease-(--ease-out-expo) focus-visible:outline-offset-[-2px] md:items-baseline md:py-9 md:can-hover:py-7"
@@ -48,9 +53,11 @@ export function ProjectRow({ item, number, eagerCover, shareCover, onPointerEnte
         <span className="label col-span-6 tabular-nums transition-colors duration-(--duration-fast) group-hover:text-accent group-focus-visible:text-accent md:col-span-1">
           {number}
         </span>
-        <span className="label col-span-6 text-right tabular-nums md:order-last md:col-span-1">{item.year}</span>
+        <span id={id("year")} className="label col-span-6 text-right tabular-nums md:order-last md:col-span-1">
+          {item.year}
+        </span>
 
-        <h3 className="col-span-12 text-index font-semibold md:col-span-8">
+        <h3 id={id("title")} className="col-span-12 text-index font-semibold md:col-span-8">
           {item.title}
           {/* Absolute at its static position: sits after the last word but never forces a wrap. */}
           <span
@@ -61,11 +68,13 @@ export function ProjectRow({ item, number, eagerCover, shareCover, onPointerEnte
           </span>
         </h3>
 
-        <p className="col-span-12 max-w-prose text-small text-muted md:can-hover:hidden">{item.tagline}</p>
+        <p id={id("tagline")} className="col-span-12 max-w-prose text-small text-muted md:can-hover:hidden">{item.tagline}</p>
 
         <div className="col-span-12 flex flex-wrap items-baseline gap-x-4 gap-y-1 md:col-span-2 md:flex-col md:gap-1">
-          <span className="text-small">{item.role}</span>
-          <ul className="label flex flex-wrap gap-x-4 text-faint">
+          <span id={id("role")} className="text-small">
+            {item.role}
+          </span>
+          <ul id={id("tags")} className="label flex flex-wrap gap-x-4 text-faint">
             {item.tags.map((tag) => (
               <li key={tag}>{tag}</li>
             ))}

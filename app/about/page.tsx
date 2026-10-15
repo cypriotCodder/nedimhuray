@@ -31,6 +31,7 @@ export default function About() {
           fill
           sizes="(min-width: 768px) 40vw, (min-width: 640px) 66vw, 100vw"
           loading="eager"
+          fetchPriority="high"
           className="object-cover"
         />
       </div>

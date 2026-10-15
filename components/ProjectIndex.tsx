@@ -33,17 +33,20 @@ export function ProjectIndex({ items }: { items: IndexItem[] }) {
   const enabled = usePreviewEnabled();
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const previewRef = useRef<PreviewHandle>(null);
-  const placeAt = (px: number, py: number) => previewRef.current?.moveTo(px, py);
+  const placeAt = (px: number, py: number, above = false) => previewRef.current?.moveTo(px, py, { above });
 
   const onPointerMove = (e: PointerEvent) => {
     if (enabled && e.pointerType === "mouse") placeAt(e.clientX, e.clientY);
   };
 
-  // Keyboard users get the preview too, parked at the right of the focused row.
+  // Keyboard users get the preview too: after the title's arrow, sitting above the
+  // focused row so it covers the dimmed row above rather than this row's details.
   const onRowFocus = (slug: string, e: FocusEvent<HTMLAnchorElement>) => {
     if (!enabled || !e.currentTarget.matches(":focus-visible")) return;
-    const r = e.currentTarget.getBoundingClientRect();
-    placeAt(r.left + r.width * 0.6, r.top + r.height / 2);
+    const row = e.currentTarget.getBoundingClientRect();
+    const arrow = e.currentTarget.querySelector("h3 > [aria-hidden]");
+    const x = arrow ? arrow.getBoundingClientRect().right : row.left + row.width * 0.6;
+    placeAt(x, row.top, true);
     setActiveSlug(slug);
   };
 

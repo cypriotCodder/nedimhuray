@@ -1,6 +1,8 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useSyncExternalStore } from "react";
+import { themeColors } from "@/lib/theme";
 
 /*
  * Light/dark switch. The theme lives in <html data-theme>, which the pre-paint
@@ -33,6 +35,16 @@ function subscribe(onChange: () => void) {
 export function ThemeToggle() {
   // null during SSR/hydration, then the real theme.
   const theme = useSyncExternalStore<Theme | null>(subscribe, currentTheme, () => null);
+
+  // Point the browser UI colour at the active theme (the server tags only know the
+  // system setting). Re-run per route: client navigation re-renders the metadata tags.
+  const pathname = usePathname();
+  useEffect(() => {
+    if (!theme) return;
+    for (const meta of document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')) {
+      meta.content = themeColors[theme];
+    }
+  }, [theme, pathname]);
 
   useEffect(() => {
     const mq = matchMedia(LIGHT_QUERY);

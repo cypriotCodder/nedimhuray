@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { site } from "@/content/site";
 import { getProjects } from "@/lib/projects";
+import { NavLink } from "./NavLink";
 import { ThemeToggle } from "./ThemeToggle";
 
 export function SiteHeader() {
@@ -17,14 +18,14 @@ export function SiteHeader() {
       <nav aria-label="Primary">
         <ul className="label flex items-center gap-5 sm:gap-6">
           <li>
-            <Link href="/#index" className="transition-colors duration-(--duration-fast) hover:text-fg">
+            <NavLink href="/#index" match="/" className="transition-colors duration-(--duration-fast) hover:text-fg aria-[current=page]:text-fg">
               Index <span className="text-faint">({String(count).padStart(2, "0")})</span>
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link href="/about" className="transition-colors duration-(--duration-fast) hover:text-fg">
+            <NavLink href="/about" match="/about" className="transition-colors duration-(--duration-fast) hover:text-fg aria-[current=page]:text-fg">
               About
-            </Link>
+            </NavLink>
           </li>
           <li>
             <a href={`mailto:${site.email}`} className="transition-colors duration-(--duration-fast) hover:text-fg">
