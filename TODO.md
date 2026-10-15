@@ -2,7 +2,7 @@
 
 Outstanding work after phases 1–8 (see PLAN.md). Ordered roughly by priority.
 **Status:** §4, §6, §7 worked through on 2026-10-15. Changes are local and uncommitted until pushed to `main`.
-Last updated: 2026-10-15.
+Last updated: 2026-10-15 (added: link CV to the site, §3).
 
 ## 1. Domain ✅ (done 2026-10-15)
 
@@ -18,25 +18,29 @@ Keep the Cloudflare records **DNS only**: turning on the orange-cloud proxy woul
 GitHub → Vercel auto-deploy works: commits `591751f` and `03d6a7c` built and went to production as **Git**
 deployments. nedimhuray.com shows the real email, location, links and the new portrait.
 
-Loose ends from that step:
-- [ ] LinkedIn link still lacks `https://` (`www.linkedin.com/in/nedim-huray` → `https://www.linkedin.com/in/nedim-huray`); as is it 404s on our own domain
-- [ ] Portrait alt text in `content/site.ts` still describes the old placeholder silhouette
-- [ ] Portrait `width`/`height` say 1200×1500 but `portrait.jpeg` is 768×1024 (3:4; shown cropped to 4:5). Correct the numbers,
-      and ideally supply a ≥ 1200 px-wide photo (on desktop it's displayed ~580 px wide, i.e. ~1160 px on retina)
-- [ ] `public/about/portrait2.svg` is unused; delete it
+Loose ends from that step: all fixed 2026-10-15 (LinkedIn `https://`, portrait alt text, portrait size 768×1024,
+`portrait2.svg` deleted). A larger portrait (≥ 1200 px wide) would still look sharper on retina desktops.
 
-## 3. Replace remaining placeholder content
+## 3. Real content ✅ mostly (2026-10-15)
 
-Done and live: location, availability, email, GitHub + LinkedIn links (LinkedIn URL needs a fix, see §2), portrait.
+Done: positioning line, meta description, about intro/bio/skills, and 5 real case studies
+(Masadan Sipariş, MicroShop, Kentimde, Asfalya, Seed Engine), sourced from `portfolio-content.md` and
+fact-checked against the GitHub READMEs. Old placeholder projects and art deleted.
 
-- [ ] `content/site.ts`: one-line `positioning` (still placeholder)
-- [ ] `content/site.ts` → `about`: `intro`, `bio`, `skills` (all placeholder), CV PDF (set `about.cv` once the file exists in `public/`)
-- [ ] `content/projects.ts`: 3–6 real projects (title, tagline, year, role, tags, stack, links, blocks) with media in `public/projects/<slug>/`
-  - Covers: use JPG or PNG (WebP/AVIF covers get a text-only share card, because `next/og` can't decode them), 16:10, with real alt text
-  - Give every image `width`/`height` (the `Media` type requires them; this prevents layout shift)
-- [ ] Delete the generated placeholder art and `scripts/generate-placeholders.mjs` + the `placeholders` npm script once nothing uses them
-      (note: the script also writes `public/about/portrait.svg`; remove that part too)
-- [ ] Accent colour or brand preferences, if any (tokens live in `app/globals.css`; keep AA contrast in both themes)
+- [ ] **Screenshots / covers (you):** each project still uses generated placeholder art (`cover.svg`, alt text says so).
+      Add a real 16:10 cover (JPG/PNG, ≥ 1600 px wide) per project in `public/projects/<slug>/`, update `cover` in
+      `content/projects.ts`, and add screenshots as `image` / `gallery` blocks. Suggestions per project are in
+      `portfolio-content.md`. MicroShop already has real assets in its repo (`diagrams/microservices.jpeg`,
+      `performance/results/charts/01_stress_latency_comparison.png`, `docs/screenshots/`)
+- [ ] **Confirm two claims not found in any README:** "several years working as a fitness trainer" and
+      "Turkish and English fluent" (about page bio + skills)
+- [ ] **Confirm years:** Masadan Sipariş is set to 2026 (repo created Sept 2026; the content doc said "2025–2026").
+      Kentimde 2026, Asfalya 2025, Seed Engine 2026 match repo creation dates
+- [ ] **Fix your GitHub profile README:** it says MicroShop p95 was "≈ 59 ms vs ≈ 2 s", but the project README
+      (and this site) say 156.7 ms vs 985.3 ms
+- [ ] CV PDF: add `public/cv.pdf` and uncomment `about.cv` in `content/site.ts`
+- [ ] Once real covers exist: delete `scripts/generate-placeholders.mjs` and the `placeholders` npm script
+- [ ] Accent colour or brand preferences, if any (tokens in `app/globals.css`; keep AA contrast in both themes)
 
 ## 4. Mobile LCP (phase 7 follow-up)
 
@@ -61,7 +65,7 @@ Render delay is now 16–110 ms on every page. The old "JS blocks the paint" the
 - [ ] Deploy, then re-measure `/about` on production (locally it's now 2.1 s with ~0 TTFB; production adds ~0.4 s TTFB)
 - [ ] If still > 2 s: the rest is bandwidth contention on slow 4G (fonts ≈ 98 kB + JS 144 kB load alongside the image).
       Options: a smaller/cropped portrait, or `preload` instead of `fetchPriority` so it starts from `<head>`
-- [ ] Re-measure every page once real project covers replace the placeholders
+- [ ] Re-measure every page once real project covers replace the placeholders (`/about` LCP too, after deploy)
 - [ ] Optional real-user data: Vercel Speed Insights (`@vercel/speed-insights`); new dependency, decide first
 
 Tried and rejected: dropping Bricolage's `opsz` axis would save 35 kB on every page (77 → 41 kB), but it visibly

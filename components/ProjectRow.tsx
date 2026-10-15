@@ -50,16 +50,19 @@ export function ProjectRow({ item, number, eagerCover, shareCover, onPointerEnte
       >
         {shareCover ? <CoverTransition slug={item.slug}>{cover}</CoverTransition> : cover}
 
-        <span className="label col-span-6 tabular-nums transition-colors duration-(--duration-fast) group-hover:text-accent group-focus-visible:text-accent md:col-span-1">
-          {number}
-        </span>
-        <span id={id("year")} className="label col-span-6 text-right tabular-nums md:order-last md:col-span-1">
-          {item.year}
-        </span>
+        {/* Number + year: a pair at the left on wide screens, split across the top line on narrow ones. */}
+        <div className="label col-span-12 flex justify-between tabular-nums md:col-span-1 md:flex-col md:gap-1">
+          <span className="transition-colors duration-(--duration-fast) group-hover:text-accent group-focus-visible:text-accent">
+            {number}
+          </span>
+          <span id={id("year")} className="text-faint">
+            {item.year}
+          </span>
+        </div>
 
-        <h3 id={id("title")} className="col-span-12 text-index font-semibold md:col-span-8">
+        <h3 id={id("title")} className="col-span-12 text-index font-semibold md:col-span-8 md:pr-[0.6em]">
           {item.title}
-          {/* Absolute at its static position: sits after the last word but never forces a wrap. */}
+          {/* Absolute at its static position, so it never forces a wrap; the h3 reserves its width (pr) so it never meets the meta column. */}
           <span
             aria-hidden="true"
             className="absolute ml-[0.15em] font-normal text-accent opacity-0 transition-[opacity,translate] duration-(--duration-base) ease-(--ease-out-expo) -translate-x-[0.2em] group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100"
@@ -70,7 +73,7 @@ export function ProjectRow({ item, number, eagerCover, shareCover, onPointerEnte
 
         <p id={id("tagline")} className="col-span-12 max-w-prose text-small text-muted md:can-hover:hidden">{item.tagline}</p>
 
-        <div className="col-span-12 flex flex-wrap items-baseline gap-x-4 gap-y-1 md:col-span-2 md:flex-col md:gap-1">
+        <div className="col-span-12 flex flex-wrap items-baseline gap-x-4 gap-y-1 md:col-span-3 md:flex-col md:gap-1">
           <span id={id("role")} className="text-small">
             {item.role}
           </span>

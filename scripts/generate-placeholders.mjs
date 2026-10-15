@@ -167,61 +167,19 @@ function field(w, h, seed) {
   );
 }
 
+// Placeholder covers until real screenshots exist. Each style loosely matches its project.
 const projects = [
-  { slug: "atlas-of-nowhere", art: contours, seed: 11 },
-  { slug: "quiet-machine", art: halftone, seed: 23 },
-  { slug: "paper-signal", art: signal, seed: 37 },
-  { slug: "field-notes-00", art: field, seed: 41 },
-];
-
-// Every project gets the same set of files so content entries stay uniform.
-const variants = [
-  { name: "cover", w: 1600, h: 1000, seedOffset: 0 },
-  { name: "detail-1", w: 1600, h: 1000, seedOffset: 101 },
-  { name: "detail-2", w: 1200, h: 1500, seedOffset: 202 },
-  { name: "detail-3", w: 1200, h: 1500, seedOffset: 303 },
+  { slug: "masadan-siparis", art: signal, seed: 37 }, // waveforms ≈ printed kitchen tickets
+  { slug: "microshop", art: halftone, seed: 23 }, // dot field ≈ many services
+  { slug: "kentimde", art: contours, seed: 11 }, // contour map ≈ a municipality
+  { slug: "asfalya", art: field, seed: 41 }, // soft colour fields ≈ analytics
+  { slug: "seed-engine", art: contours, seed: 59 }, // terrain ≈ procedural islands
 ];
 
 for (const p of projects) {
   const dir = join(OUT, p.slug);
   mkdirSync(dir, { recursive: true });
-  for (const v of variants) {
-    writeFileSync(join(dir, `${v.name}.svg`), p.art(v.w, v.h, p.seed + v.seedOffset));
-  }
+  writeFileSync(join(dir, "cover.svg"), p.art(1600, 1000, p.seed));
 }
 
-/* About page — a halftone head-and-shoulders silhouette, unmistakably a stand-in for a photo. */
-function portrait(w, h) {
-  const gap = 22;
-  // Soft membership (0..1) in an ellipse, fading out over `soft` units of normalised distance.
-  const inEllipse = (x, y, cx, cy, rx, ry, soft = 0.12) => {
-    const d = Math.sqrt(((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2);
-    return Math.min(1, Math.max(0, (1 - d) / soft));
-  };
-  let dots = "";
-  for (let y = gap / 2; y < h; y += gap) {
-    for (let x = gap / 2; x < w; x += gap) {
-      const head = inEllipse(x, y, w * 0.5, h * 0.4, w * 0.18, h * 0.16);
-      const neck = inEllipse(x, y, w * 0.5, h * 0.6, w * 0.1, h * 0.08, 0.3);
-      const body = inEllipse(x, y, w * 0.5, h * 1.0, w * 0.5, h * 0.33, 0.06);
-      const shape = Math.max(head, neck, body);
-      // Key light from the upper left.
-      const light = 0.35 + 0.65 * Math.min(1, Math.max(0, 1.1 - (x / w) * 0.9 - (y / h) * 0.35));
-      const r = (gap / 2) * 0.92 * shape * light;
-      if (r > 0.5) dots += `<circle cx="${r1(x)}" cy="${r1(y)}" r="${r1(r)}"/>`;
-    }
-  }
-  const mark = `<circle cx="${r1(w * 0.82)}" cy="${r1(h * 0.14)}" r="9" fill="#ff5a2b"/>`;
-  return svg(
-    w,
-    h,
-    `<rect width="${w}" height="${h}" fill="#1a1713"/><g fill="#efe9de">${dots}</g>${mark}<rect width="${w}" height="${h}" filter="url(#g)"/>`,
-    grain("g", 0.07),
-  );
-}
-
-const aboutDir = join(OUT, "..", "about");
-mkdirSync(aboutDir, { recursive: true });
-writeFileSync(join(aboutDir, "portrait.svg"), portrait(1200, 1500));
-
-console.log(`Wrote ${projects.length * variants.length} project images to ${OUT} and a portrait to ${aboutDir}`);
+console.log(`Wrote ${projects.length} placeholder covers to ${OUT}`);

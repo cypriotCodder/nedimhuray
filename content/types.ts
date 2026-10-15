@@ -12,7 +12,8 @@ export type Media = {
 };
 
 export type Block =
-  | { type: "text"; body: string }
+  /** `title` renders as a small label above the text, e.g. "Problem". */
+  | { type: "text"; title?: string; body: string }
   | ({ type: "image"; caption?: string; wide?: boolean } & Media)
   | { type: "video"; src: string; poster: Media; caption?: string }
   | { type: "gallery"; images: Media[]; caption?: string }
@@ -37,7 +38,10 @@ export type Project = {
 
 export type Site = {
   name: string;
+  /** One line, shown next to the name on the home page. */
   positioning: string;
+  /** Meta description for search results and link previews. */
+  description: string;
   location: string;
   availability: string;
   email: string;

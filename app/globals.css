@@ -32,7 +32,7 @@
   --text-lead: clamp(1.625rem, 1.05rem + 2.2vw, 3.25rem);
   --text-lead--line-height: 1.08;
   --text-lead--letter-spacing: -0.025em;
-  --text-index: clamp(2.375rem, 0.6rem + 7vw, 8.75rem);
+  --text-index: clamp(2.375rem, 0.6rem + 7vw, 8rem);
   --text-index--line-height: 0.92;
   --text-index--letter-spacing: -0.045em;
   --text-display: clamp(3rem, 0.5rem + 9.5vw, 11.5rem);

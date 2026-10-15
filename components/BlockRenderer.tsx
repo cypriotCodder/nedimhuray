@@ -23,6 +23,7 @@ function BlockView({ block }: { block: Block }) {
       return (
         <div className="frame grid grid-cols-12 gap-x-4">
           <div className="col-span-12 flex max-w-prose flex-col gap-[1em] text-body text-muted md:col-span-7 md:col-start-5 lg:col-span-6 lg:col-start-5">
+            {block.title && <h2 className="label text-faint">{block.title}</h2>}
             {block.body.split("\n\n").map((para, i) => (
               <p key={i}>{para}</p>
             ))}
