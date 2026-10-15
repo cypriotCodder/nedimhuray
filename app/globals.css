@@ -1,0 +1,186 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens. Everything visual is defined here; components reference
+ * these through Tailwind utilities (bg-canvas, text-fg, px-gutter, text-index...).
+ * The default Tailwind palette is removed on purpose so stray colours can't creep in.
+ *
+ * Colours are named by role and written light-dark(LIGHT, DARK); the active
+ * `color-scheme` (set below) picks one. Dark is the primary design target.
+ * Every text colour clears WCAG AA (4.5:1) on canvas and surface in both themes.
+ */
+@theme {
+  --color-*: initial;
+  --color-canvas: light-dark(oklch(0.955 0.01 85), oklch(0.16 0.004 75)); /* page: off-white / warm near-black */
+  --color-surface: light-dark(oklch(0.915 0.012 85), oklch(0.2 0.005 75)); /* behind media while it loads */
+  --color-fg: light-dark(oklch(0.2 0.006 75), oklch(0.94 0.012 85));
+  --color-muted: light-dark(oklch(0.43 0.01 80), oklch(0.72 0.012 80));
+  --color-faint: light-dark(oklch(0.51 0.01 80), oklch(0.6 0.01 80));
+  --color-line: light-dark(oklch(0.84 0.01 80), oklch(0.3 0.006 75));
+  --color-accent: light-dark(oklch(0.55 0.19 36), oklch(0.68 0.2 38)); /* the one accent: signal vermilion */
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* Fluid type scale. Display sizes carry their own leading + tracking. */
+  --text-meta: 0.75rem;
+  --text-meta--line-height: 1.4;
+  --text-meta--letter-spacing: 0.02em;
+  --text-small: 0.9375rem;
+  --text-small--line-height: 1.5;
+  --text-body: clamp(1.0625rem, 0.95rem + 0.35vw, 1.3125rem);
+  --text-body--line-height: 1.55;
+  --text-lead: clamp(1.625rem, 1.05rem + 2.2vw, 3.25rem);
+  --text-lead--line-height: 1.08;
+  --text-lead--letter-spacing: -0.025em;
+  --text-index: clamp(2.375rem, 0.6rem + 7vw, 8.75rem);
+  --text-index--line-height: 0.92;
+  --text-index--letter-spacing: -0.045em;
+  --text-display: clamp(3rem, 0.5rem + 9.5vw, 11.5rem);
+  --text-display--line-height: 0.88;
+  --text-display--letter-spacing: -0.05em;
+
+  /* Spacing beyond Tailwind's 4px base scale. */
+  --spacing-gutter: clamp(1.25rem, 0.6rem + 2.6vw, 3rem);
+  --spacing-section: clamp(5rem, 2rem + 10vw, 11rem);
+  --spacing-block: clamp(3rem, 1.5rem + 5vw, 7rem);
+
+  --container-content: 1400px;
+  --container-prose: 38rem;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-strong: cubic-bezier(0.7, 0, 0.2, 1);
+  --duration-fast: 200ms;
+  --duration-base: 400ms;
+  --duration-morph: 560ms;
+
+  --animate-fade-in: fade-in var(--duration-fast) ease-out;
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+}
+
+/* Fonts come from next/font, which exposes CSS variables on <html>. */
+@theme inline {
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+/* True hover devices only — gates the cursor preview vs. inline covers. */
+@custom-variant can-hover (@media (hover: hover) and (pointer: fine));
+
+@layer base {
+  /*
+   * Theme: the pre-paint script in app/layout.tsx sets data-theme from the
+   * visitor's saved choice or their system setting. Without JS, follow the system.
+   */
+  :root {
+    color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme]) {
+      color-scheme: light;
+    }
+  }
+
+  html {
+    background: var(--color-canvas);
+    color: var(--color-fg);
+    font-family: var(--font-display);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-height: 100svh;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-canvas);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Shared page frame: centred, max width, fluid gutters. */
+  .frame {
+    width: 100%;
+    max-width: calc(var(--container-content) + 2 * var(--spacing-gutter));
+    margin-inline: auto;
+    padding-inline: var(--spacing-gutter);
+  }
+
+  /* Small uppercase mono labels used for all metadata. */
+  .label {
+    font-family: var(--font-mono);
+    font-size: var(--text-meta);
+    line-height: var(--text-meta--line-height);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  /*
+   * The Index dimming: when any row is hovered or keyboard-focused, every
+   * other row recedes. Pure CSS, so it also works before/without hydration.
+   */
+  .index-list:has(.index-row:hover, .index-row:focus-visible) .index-row:not(:hover, :focus-visible) {
+    opacity: 0.22;
+  }
+}
+
+/*
+ * Page transitions (React <ViewTransition>, see components/CoverTransition.tsx).
+ * The clicked cover travels into the case-study hero; the rest of the page
+ * gets the browser's default quick crossfade.
+ */
+::view-transition {
+  pointer-events: none; /* clicks during the animation reach the new page */
+}
+
+::view-transition-group(.morph) {
+  animation-duration: var(--duration-morph);
+  animation-timing-function: var(--ease-in-out-strong);
+}
+
+/*
+ * Old and new covers can differ in aspect (the hero is height-capped): fill
+ * without stretching. The pair must clip, or the cropped-off part of each
+ * snapshot paints around the cover (overflow on old/new themselves is ignored).
+ */
+::view-transition-image-pair(.morph) {
+  overflow: clip;
+}
+::view-transition-old(.morph),
+::view-transition-new(.morph) {
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Reduced motion: nothing travels; the cover crossfades in place. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*) {
+    animation: none !important;
+  }
+}
