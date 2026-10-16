@@ -2,7 +2,7 @@
 
 Outstanding work after phases 1–8 (see PLAN.md). Ordered roughly by priority.
 **Status:** §4, §6, §7 worked through on 2026-10-15. Changes are local and uncommitted until pushed to `main`.
-Last updated: 2026-10-15 (added: link CV to the site, §3).
+Last updated: 2026-10-16 (Turkish language support built, §8).
 
 ## 1. Domain ✅ (done 2026-10-15)
 
@@ -107,3 +107,25 @@ Automated runs on a local production build (2026-10-15):
 - [ ] Going back from a case study to the Index on desktop has no animation (instant). A reverse morph needs a design:
       on desktop the cover only exists in the hidden cursor preview, so there's nothing on the Index to land on
 - [ ] Vercel Authentication protects preview deployments (production is public); fine as is, but note it when sharing previews
+
+## 8. Turkish language support (TR) — built and copy approved (2026-10-16)
+
+Approach and decisions are in PLAN.md (phase 9). Local and uncommitted.
+
+- [x] URL scheme: `/` English, `/tr/…` Turkish, same slugs; no auto-redirect
+- [x] Routes: route groups `app/(en)` + `app/(tr)/tr`, each its own root layout with the right `<html lang>`; all static (24 pages)
+- [x] Content: `{ en, tr }` for all copy in `content/site.ts` and `content/projects.ts`; missing Turkish fails the build
+- [x] UI strings in `content/ui.ts` (nav, labels, aria-labels, 404, theme toggle, OG card labels)
+- [x] Language switch in the header (`EN`/`TR`, `hreflang` + `lang`, accessible name "Türkçe (TR)"); phones hide the project count to fit it
+- [x] SEO: per-locale canonical + hreflang (`x-default` = English), `og:locale`, per-locale OG cards, both locales in the sitemap
+- [x] Turkish casing: CSS uppercase follows `lang="tr"` (İ/I correct); OG labels use `toLocaleUpperCase`; footer brand names marked `lang="en"`
+- [x] Layout checked at 360 px and 1440 px in both languages: no horizontal scroll
+- [x] Case-study and next-project links stay within the current locale
+- [x] Turkish copy reviewed and approved by the owner (2026-10-16)
+- [ ] Check the cover morph and next-project transition in both locales in a browser (`npm run build && npm run start`)
+- [ ] Fonts: the `latin-ext` faces (ğ İ ş) load on demand, not preloaded. Preloading them everywhere would add ~45 kB of fonts
+      to every page (Bricolage 30.6 kB + Geist Mono 14.7 kB). Re-check Lighthouse on `/tr`; preload only if the late swap is visible
+- [ ] Unmatched `/tr/...` URLs get the English global 404 (it can't know the language); acceptable, revisit only if it matters
+- [ ] OG image URLs now carry a hash (`/opengraph-image-35z9bs`) because they live in route groups; old shared links' cached cards are unaffected
+- [ ] CV: provide a Turkish PDF too (`public/cv-tr.pdf`); `about.cv` takes `{ en, tr }` (see §3)
+- [ ] Re-run Lighthouse (≥ 95) and axe on both locales. First-load JS on `/` is unchanged by this work (+0.2 kB gz)

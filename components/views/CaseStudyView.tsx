@@ -6,40 +6,39 @@ import type { ReactNode } from "react";
 import { BlockRenderer } from "@/components/BlockRenderer";
 import { CoverTransition } from "@/components/CoverTransition";
 import { NextProject } from "@/components/NextProject";
-import { site } from "@/content/site";
-import { getNextProject, getProject, getProjectNumber, getProjects } from "@/lib/projects";
+import { ui } from "@/content/ui";
+import { localePath, type Locale } from "@/lib/i18n";
+import { alternates, openGraph } from "@/lib/metadata";
+import { getNextProject, getProject, getProjectNumber, getProjectSlugs, getProjectTotal } from "@/lib/projects";
 
-// Every case study is prerendered at build time; any other slug is a 404.
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return getProjects().map((p) => ({ slug: p.slug }));
+export function caseStudyParams() {
+  return getProjectSlugs().map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({ params }: PageProps<"/work/[slug]">): Promise<Metadata> {
-  const project = getProject((await params).slug);
+export function caseStudyMetadata(lang: Locale, slug: string): Metadata {
+  const project = getProject(slug, lang);
   if (!project) return {};
   return {
     title: project.title,
     description: project.tagline,
-    // openGraph replaces (not merges with) the layout's, so repeat siteName.
-    openGraph: { type: "article", siteName: site.name, title: project.title, description: project.tagline, url: "./" },
+    alternates: alternates(lang, `/work/${slug}`),
+    openGraph: openGraph(lang, { type: "article", title: project.title, description: project.tagline }),
   };
 }
 
-export default async function CaseStudy({ params }: PageProps<"/work/[slug]">) {
-  const { slug } = await params;
-  const project = getProject(slug);
+export function CaseStudyView({ lang, slug }: { lang: Locale; slug: string }) {
+  const project = getProject(slug, lang);
   if (!project) notFound();
 
-  const next = getNextProject(slug);
-  const total = String(getProjects().length).padStart(2, "0");
+  const t = ui[lang].caseStudy;
+  const next = getNextProject(slug, lang);
+  const total = getProjectTotal();
   const facts: { term: string; value: ReactNode }[] = [
-    { term: "Role", value: project.role },
-    { term: "Year", value: project.year },
-    { term: "Stack", value: project.stack?.join(", ") ?? "—" },
+    { term: t.role, value: project.role },
+    { term: t.year, value: project.year },
+    { term: t.stack, value: project.stack?.join(", ") ?? "—" },
     {
-      term: "Links",
+      term: t.links,
       value: project.links?.length ? (
         <ul className="flex flex-col gap-1">
           {project.links.map((l) => (
@@ -63,8 +62,9 @@ export default async function CaseStudy({ params }: PageProps<"/work/[slug]">) {
     <article>
       <header className="frame grid grid-cols-12 gap-x-4 pt-[clamp(2.5rem,8vh,6rem)] pb-10 md:pb-14">
         <div className="label col-span-12 mb-10 flex justify-between md:mb-16">
-          <Link href="/#index" className="transition-colors duration-(--duration-fast) hover:text-fg">
-            <span aria-hidden="true">← </span>Index
+          <Link href={localePath(lang, "/#index")} className="transition-colors duration-(--duration-fast) hover:text-fg">
+            <span aria-hidden="true">← </span>
+            {t.back}
           </Link>
           <span className="tabular-nums text-faint">
             {getProjectNumber(slug)} / {total}
@@ -105,7 +105,13 @@ export default async function CaseStudy({ params }: PageProps<"/work/[slug]">) {
         <BlockRenderer blocks={project.blocks} />
       </div>
 
-      <NextProject project={next} number={getProjectNumber(next.slug)} total={total} />
+      <NextProject
+        project={next}
+        href={localePath(lang, `/work/${next.slug}`)}
+        label={t.next}
+        number={getProjectNumber(next.slug)}
+        total={total}
+      />
     </article>
   );
 }

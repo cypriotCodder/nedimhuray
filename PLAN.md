@@ -86,6 +86,9 @@ type Project = {
 8. **Deploy** — Vercel, custom domain notes in README.
    *Status (2026-10-15):* deployed to Vercel project `portfolio-website`. Live at **https://nedimhuray.com** (Cloudflare DNS, CNAME records, DNS only; `www` and `http` → 308 → `https://nedimhuray.com`). `NEXT_PUBLIC_SITE_URL=https://nedimhuray.com` is set for Production. README not written yet. Remaining work is tracked in [TODO.md](TODO.md).
 
+9. **Turkish (TR)** — the whole site in English and Turkish.
+   *Decisions (2026-10-16):* English stays at `/`, `/about`, `/work/<slug>`; Turkish lives at `/tr`, `/tr/about`, `/tr/work/<slug>` (same slugs). No auto-redirect by browser language; a link in the header (`EN`/`TR`) goes to the same page in the other language. Each locale is a route group with its own root layout (`app/(en)`, `app/(tr)/tr`) so `<html lang>` is right in the static HTML; the route files are thin and render shared views from `components/views/`. This was chosen over one `app/[lang]` tree + rewrites, which would have made the real route `/en/…` and broken relative canonicals/OG URLs. Cost: switching language is a full page load, and unmatched URLs need `app/global-not-found.tsx` (experimental `globalNotFound` flag), which is English-only. Content: every piece of copy is `{ en, tr }` (`Text`/`Localized<T>` in `content/types.ts`), case-study `blocks` are written per locale, product names and stack stay shared; a missing translation fails the build. Interface copy is in `content/ui.ts`. Tags are translated, stack names stay English. SEO: per-locale canonical + hreflang (`x-default` = English), `og:locale`, per-locale OG cards (labels uppercased in JS with the locale's rules), both locales in the sitemap. On phones the header hides the project count to make room for the switch.
+
 Each phase should end in a working, committed state.
 
 ## 8. Acceptance criteria
@@ -107,4 +110,4 @@ Each phase should end in a working, committed state.
 
 ## 10. Later (explicitly out of scope for v1)
 
-Blog/notes, project filtering by tag, localisation, analytics (Vercel Web Analytics is a one-line add), sound/WebGL flourishes.
+Blog/notes, project filtering by tag, more languages than EN/TR, analytics (Vercel Web Analytics is a one-line add), sound/WebGL flourishes.

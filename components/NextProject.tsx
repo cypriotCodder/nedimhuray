@@ -3,18 +3,18 @@ import Link from "next/link";
 import type { Project } from "@/content/types";
 import { CoverTransition } from "./CoverTransition";
 
-type Props = { project: Project; number: string; total: string };
+type Props = { project: Project; href: string; label: string; number: string; total: string };
 
 /** Footer link to the next case study; cycles back to the first. */
-export function NextProject({ project, number, total }: Props) {
+export function NextProject({ project, href, label, number, total }: Props) {
   return (
-    <nav aria-label="Next project" className="frame mt-section">
+    <nav aria-label={label} className="frame mt-section">
       <Link
-        href={`/work/${project.slug}`}
+        href={href}
         className="group grid grid-cols-12 items-end gap-x-4 gap-y-6 border-t border-line pt-8"
       >
         <p className="label col-span-12 flex justify-between">
-          <span>Next project</span>
+          <span>{label}</span>
           <span className="tabular-nums text-faint">
             {number} / {total}
           </span>

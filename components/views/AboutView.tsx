@@ -1,13 +1,22 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { site } from "@/content/site";
+import { ui } from "@/content/ui";
+import type { Locale } from "@/lib/i18n";
+import { alternates } from "@/lib/metadata";
+import { getSite } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "About",
-  description: site.about.intro,
-};
+// No openGraph here: it would replace the layout's, which carries the site card image.
+export function aboutMetadata(lang: Locale): Metadata {
+  return {
+    title: ui[lang].about.title,
+    description: getSite(lang).about.intro,
+    alternates: alternates(lang, "/about"),
+  };
+}
 
-export default function About() {
+export function AboutView({ lang }: { lang: Locale }) {
+  const site = getSite(lang);
+  const t = ui[lang].about;
   const { about } = site;
   const links = [
     { label: site.email, href: `mailto:${site.email}` },
@@ -18,7 +27,7 @@ export default function About() {
   return (
     <article className="frame grid grid-cols-12 gap-x-4 pt-[clamp(2.5rem,8vh,6rem)]">
       <p className="label col-span-12 mb-10 flex justify-between md:mb-16">
-        <span>About</span>
+        <span>{t.title}</span>
         <span className="text-faint">{site.location}</span>
       </p>
 
@@ -59,7 +68,7 @@ export default function About() {
         </dl>
 
         <div className="border-t border-line pt-8">
-          <h2 className="label text-faint">Elsewhere</h2>
+          <h2 className="label text-faint">{t.elsewhere}</h2>
           <ul className="mt-3 flex flex-col gap-1 text-small">
             {links.map((l) => (
               <li key={l.href}>

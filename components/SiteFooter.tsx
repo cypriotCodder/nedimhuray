@@ -1,6 +1,8 @@
-import { site } from "@/content/site";
+import type { Locale } from "@/lib/i18n";
+import { getSite } from "@/lib/site";
 
-export function SiteFooter() {
+export function SiteFooter({ lang }: { lang: Locale }) {
+  const site = getSite(lang);
   return (
     <footer className="frame mt-section border-t border-line py-8 md:py-10">
       <div className="grid gap-8 md:grid-cols-12 md:items-end">
@@ -13,7 +15,8 @@ export function SiteFooter() {
         <ul className="label flex gap-6 md:col-span-3">
           {site.socials.map((s) => (
             <li key={s.href}>
-              <a href={s.href} className="transition-colors duration-(--duration-fast) hover:text-fg" rel="me noopener">
+              {/* lang="en": brand names, so Turkish casing doesn't uppercase them to "GİTHUB". */}
+              <a href={s.href} lang="en" className="transition-colors duration-(--duration-fast) hover:text-fg" rel="me noopener">
                 {s.label}
               </a>
             </li>

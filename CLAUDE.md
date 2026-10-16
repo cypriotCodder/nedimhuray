@@ -20,16 +20,21 @@ Keep this section accurate:
 ## Structure (target)
 
 ```
-app/                 routes: / , /work/[slug], /about
+app/(en)/            English routes: / , /work/[slug], /about (thin; render components/views/)
+app/(tr)/tr/         the same routes in Turkish under /tr
 components/          UI components (Index, ProjectRow, CursorPreview, BlockRenderer, ...)
-content/projects.ts  all project data, typed as Project[] (single source of truth)
+components/views/    page bodies shared by both locales (take a `lang` prop)
+content/projects.ts  all project data, typed as ProjectSource[] (single source of truth; copy is { en, tr })
+content/site.ts      owner details and /about copy ({ en, tr })
+content/ui.ts        interface copy (nav, labels, aria-labels) per locale
 public/projects/<slug>/   media for each project
-lib/                 small helpers (getProject, getNextProject)
+lib/                 small helpers (getProject(slug, lang), getSite(lang), localePath, metadata)
 ```
 
 ## Rules
 
 - **Content is data.** Adding a project must only require editing `content/projects.ts` and adding media under `public/projects/<slug>/`. Never hardcode project content inside components.
+- **Two languages.** Every user-facing string exists in English and Turkish: content in `content/*.ts` as `{ en, tr }`, interface copy in `content/ui.ts`. Build internal links with `localePath(lang, path)`. Turkish copy is reviewed by the owner; don't ship unreviewed machine translation.
 - **Keep it basic.** No new dependency unless the plan needs it. Prefer CSS/Tailwind over JS; prefer the platform over libraries. Ask before adding anything beyond Next, React, Tailwind and Motion.
 - **One signature interaction** (cursor-following preview + shared-element transition into the case study). Don't add competing effects.
 - **Accessibility is not optional:** semantic HTML, visible focus, alt text, keyboard-operable everything, and every animation must respect `prefers-reduced-motion`.

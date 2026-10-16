@@ -32,7 +32,7 @@ function subscribe(onChange: () => void) {
   return () => observer.disconnect();
 }
 
-export function ThemeToggle() {
+export function ThemeToggle({ label }: { label: string }) {
   // null during SSR/hydration, then the real theme.
   const theme = useSyncExternalStore<Theme | null>(subscribe, currentTheme, () => null);
 
@@ -69,7 +69,7 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      aria-label="Dark theme"
+      aria-label={label}
       aria-pressed={theme === null ? undefined : theme === "dark"}
       className="-m-2 grid cursor-pointer place-items-center p-2 transition-colors duration-(--duration-fast) hover:text-fg"
     >

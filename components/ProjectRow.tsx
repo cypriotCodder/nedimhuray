@@ -41,7 +41,7 @@ export function ProjectRow({ item, number, eagerCover, shareCover, onPointerEnte
   return (
     <li>
       <Link
-        href={`/work/${item.slug}`}
+        href={item.href}
         aria-labelledby={id("title")}
         aria-describedby={["tagline", "role", "year", "tags"].map(id).join(" ")}
         onPointerEnter={onPointerEnter}

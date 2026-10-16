@@ -10,7 +10,10 @@ import { ProjectRow } from "./ProjectRow";
 // is code-split and fetched after hydration; phones never download it.
 const CursorPreview = dynamic(() => import("./CursorPreview").then((mod) => mod.CursorPreview), { ssr: false });
 
-export type IndexItem = Pick<Project, "slug" | "title" | "tagline" | "year" | "role" | "tags" | "cover">;
+export type IndexItem = Pick<Project, "slug" | "title" | "tagline" | "year" | "role" | "tags" | "cover"> & {
+  /** The case study in the current locale. */
+  href: string;
+};
 
 // Same condition as the `md:can-hover:` CSS variant: wide + true hover device.
 const PREVIEW_QUERY = "(hover: hover) and (pointer: fine) and (min-width: 48rem)";

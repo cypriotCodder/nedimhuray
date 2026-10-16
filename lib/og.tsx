@@ -4,12 +4,16 @@ import { extname, join } from "node:path";
 import { ImageResponse } from "next/og";
 import { site } from "@/content/site";
 import type { Project } from "@/content/types";
+import { ui } from "@/content/ui";
+import type { Locale } from "./i18n";
 
 /*
  * Open Graph cards, rendered at build time with next/og (Satori).
  * Colours are literals (no CSS variables here); they mirror the dark theme tokens.
  * Satori supports a subset of CSS: every multi-child div needs display:flex, and
  * use top/left/width/height rather than `inset`.
+ * Labels are uppercased in JS with the locale's rules (Satori's text-transform
+ * would turn Turkish "i" into "I" instead of "İ").
  */
 
 export const ogSize = { width: 1200, height: 630 };
@@ -70,7 +74,7 @@ async function dataUri(publicPath: string): Promise<string | null> {
   return `data:${type};base64,${data}`;
 }
 
-const monoLabel = { fontFamily: "Mono", fontSize: 22, letterSpacing: "0.08em", textTransform: "uppercase" } as const;
+const monoLabel = { fontFamily: "Mono", fontSize: 22, letterSpacing: "0.08em" } as const;
 const displayType = { fontFamily: "Display", fontWeight: 600, lineHeight: 0.92, letterSpacing: "-0.045em" } as const;
 
 function Name() {
@@ -82,18 +86,24 @@ function Name() {
   );
 }
 
+export function siteCardAlt(lang: Locale): string {
+  return `${site.name} — ${ui[lang].home.title}`;
+}
+
 /** Site card: the Index itself, set as a typographic list. */
-export async function siteCard(projects: Project[]) {
+export async function siteCard(projects: Project[], lang: Locale) {
   const shown = projects.slice(0, 4);
   const more = projects.length - shown.length;
   const titles = shown.map((p) => p.title).join("");
+  const heading = ui[lang].home.title.toLocaleUpperCase(lang);
+  const moreLabel = ui[lang].og.more(more).toLocaleUpperCase(lang);
 
   return new ImageResponse(
     (
       <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%", padding: 64, background: C.canvas, color: C.fg }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
           <Name />
-          <div style={{ ...monoLabel, color: C.faint }}>Selected work</div>
+          <div style={{ ...monoLabel, color: C.faint }}>{heading}</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", marginTop: "auto", borderTop: `1px solid ${C.line}` }}>
           {shown.map((p, i) => (
@@ -102,11 +112,11 @@ export async function siteCard(projects: Project[]) {
               <div style={{ ...displayType, fontSize: 64, color: i === 0 ? C.fg : C.muted }}>{p.title}</div>
             </div>
           ))}
-          {more > 0 && <div style={{ ...monoLabel, color: C.faint, marginTop: 16 }}>{`+ ${more} more`}</div>}
+          {more > 0 && <div style={{ ...monoLabel, color: C.faint, marginTop: 16 }}>{moreLabel}</div>}
         </div>
       </div>
     ),
-    { ...ogSize, fonts: await fonts(`${site.name}.${titles}`, "SELECTEDWORK0123456789+MORE ") },
+    { ...ogSize, fonts: await fonts(`${site.name}.${titles}`, `${heading}${moreLabel}0123456789`) },
   );
 }
 
