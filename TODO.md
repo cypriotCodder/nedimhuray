@@ -32,6 +32,9 @@ fact-checked against the GitHub READMEs. Old placeholder projects and art delete
       `content/projects.ts`, and add screenshots as `image` / `gallery` blocks. Suggestions per project are in
       `portfolio-content.md`. MicroShop already has real assets in its repo (`diagrams/microservices.jpeg`,
       `performance/results/charts/01_stress_latency_comparison.png`, `docs/screenshots/`)
+  - [x] Kentimde: real cover + staff desk, report map, sign-in and request-timeline shots (2026-10-23)
+  - [ ] Kentimde: add resident (citizen) app screenshots once those pages exist
+  - [ ] Kentimde: owner review of the new Turkish alt text/captions
 - [ ] **Confirm two claims not found in any README:** "several years working as a fitness trainer" and
       "Turkish and English fluent" (about page bio + skills)
 - [ ] **Confirm years:** Masadan Sipariş is set to 2026 (repo created Sept 2026; the content doc said "2025–2026").

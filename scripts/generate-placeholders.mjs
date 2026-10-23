@@ -171,7 +171,6 @@ function field(w, h, seed) {
 const projects = [
   { slug: "masadan-siparis", art: signal, seed: 37 }, // waveforms ≈ printed kitchen tickets
   { slug: "microshop", art: halftone, seed: 23 }, // dot field ≈ many services
-  { slug: "kentimde", art: contours, seed: 11 }, // contour map ≈ a municipality
   { slug: "asfalya", art: field, seed: 41 }, // soft colour fields ≈ analytics
   { slug: "seed-engine", art: contours, seed: 59 }, // terrain ≈ procedural islands
 ];

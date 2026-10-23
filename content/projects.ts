@@ -183,10 +183,15 @@ export const projects: ProjectSource[] = [
       en: ["SaaS", "Multi-Tenant", "Security", "Full-Stack"],
       tr: ["SaaS", "Çok Belediyeli", "Güvenlik", "Full-Stack"],
     },
-    cover: placeholderCover("kentimde", {
-      en: "teal topographic contour lines on near-black, with an orange marker at the summit",
-      tr: "siyaha yakın zemin üzerinde camgöbeği topografik eş yükselti eğrileri, zirvede turuncu bir işaret",
-    }),
+    cover: {
+      src: "/projects/kentimde/cover.jpg",
+      alt: {
+        en: "Kentimde’s home page: the headline “Every request in view, from street to town hall.” next to an illustrated map of a coastal town.",
+        tr: "Kentimde ana sayfası: kıyıdaki bir kasabanın çizim haritasının yanında “Every request in view, from street to town hall.” başlığı.",
+      },
+      width: 1984,
+      height: 1240,
+    },
     stack: ["Next.js", "PostgreSQL (row-level-security multi-tenancy)"],
     links: [{ label: "kentimde.org", href: "https://kentimde.org" }],
     blocks: {
@@ -200,6 +205,40 @@ export const projects: ProjectSource[] = [
           type: "text",
           title: "What I did",
           body: "I built a Next.js + PostgreSQL platform covering issue reporting, permits, and inspections, with multi-tenancy enforced at the database level through row-level security rather than application code alone. It supports seven user roles, four languages, and full audit logging so administrative actions are traceable.",
+        },
+        {
+          type: "image",
+          src: "/projects/kentimde/staff-today.jpg",
+          alt: "The staff panel’s Today screen for Kyrenia: open reports and how many still need an owner, a triage list sorted by priority then age, and the open reports on a map.",
+          caption: "The staff desk: what’s open today, what still needs an owner, and where it is.",
+          width: 2612,
+          height: 1430,
+        },
+        {
+          type: "gallery",
+          images: [
+            {
+              src: "/projects/kentimde/report-map.jpg",
+              alt: "The staff report map: open reports pinned to streets, with filters for category, department, priority and date.",
+              width: 2616,
+              height: 1434,
+            },
+            {
+              src: "/projects/kentimde/sign-in.jpg",
+              alt: "Resident sign-in: choose your municipality and enter your email to get a six-digit code. No password.",
+              width: 2616,
+              height: 1428,
+            },
+          ],
+          caption: "The staff report map, and resident sign-in with a one-time code sent by email.",
+        },
+        {
+          type: "image",
+          src: "/projects/kentimde/request-timeline.jpg",
+          alt: "Kentimde’s public site: the six services a town can switch on, and an example timeline of a pothole report going from submitted to resolved.",
+          caption: "From the public site: one report’s timeline, the same view for the resident and the staff (illustrative example).",
+          width: 2606,
+          height: 1406,
         },
         {
           type: "text",
@@ -217,6 +256,40 @@ export const projects: ProjectSource[] = [
           type: "text",
           title: "Ne yaptım",
           body: "Bildirim, ruhsat ve denetim süreçlerini kapsayan bir Next.js + PostgreSQL platformu geliştirdim. Çok beldelilik yalnızca uygulama koduyla değil, veritabanı düzeyinde row-level security ile sağlanıyor. Platform yedi kullanıcı rolünü ve dört dili destekliyor; tam denetim kaydı (audit log) sayesinde yönetimsel işlemler izlenebiliyor.",
+        },
+        {
+          type: "image",
+          src: "/projects/kentimde/staff-today.jpg",
+          alt: "Girne için personel panelinin “Today” ekranı: açık bildirimler ve kaçının hâlâ bir sorumlu beklediği, önceliğe sonra bekleme süresine göre sıralanan bir triyaj listesi ve açık bildirimlerin haritası.",
+          caption: "Personel paneli: bugün açık olan işler, hâlâ bir sorumlu bekleyenler ve bunların haritadaki yeri.",
+          width: 2612,
+          height: 1430,
+        },
+        {
+          type: "gallery",
+          images: [
+            {
+              src: "/projects/kentimde/report-map.jpg",
+              alt: "Personelin bildirim haritası: sokaklara iğnelenmiş açık bildirimler; kategori, departman, öncelik ve tarih filtreleri.",
+              width: 2616,
+              height: 1434,
+            },
+            {
+              src: "/projects/kentimde/sign-in.jpg",
+              alt: "Vatandaş girişi: belediye seçilip e-posta girildiğinde altı haneli bir kod gönderiliyor. Şifre yok.",
+              width: 2616,
+              height: 1428,
+            },
+          ],
+          caption: "Personelin bildirim haritası ve e-postayla gönderilen tek kullanımlık kodla vatandaş girişi.",
+        },
+        {
+          type: "image",
+          src: "/projects/kentimde/request-timeline.jpg",
+          alt: "Kentimde tanıtım sitesi: bir belediyenin açabileceği altı hizmet ve bir çukur bildiriminin gönderilmesinden çözülmesine kadar örnek bir zaman çizelgesi.",
+          caption: "Tanıtım sitesinden: bir bildirimin, vatandaşın ve personelin aynı şekilde gördüğü zaman çizelgesi (örnektir, gerçek bir kayıt değil).",
+          width: 2606,
+          height: 1406,
         },
         {
           type: "text",
